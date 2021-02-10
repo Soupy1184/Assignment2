@@ -12,8 +12,8 @@ public class Main {
         List<String> key = stringToParts(K, 12);
 
         int[] plaintextArray = alphabetToIntArray(plaintext);
-        List<String> binaryString = intArrayToBinaryString5(plaintextArray);
-        String concatBinString = stringListToString(binaryString);
+        List<String> plainArrayList = intArrayToBinaryString5(plaintextArray);
+        String concatBinString = stringListToString(plainArrayList);
         List<String> cipherArray = stringToParts(concatBinString, 16);
         
         //Round 0 - Encryption
@@ -31,7 +31,7 @@ public class Main {
         for (int i = 0; i < lefString0.size(); i++){
             lefString1.add(rightString0.get(i));
             String temp1 = lefString0.get(i);
-            String temp2 = bitExpansion(rightString0.get(i), key.get(0));
+            String temp2 = functionF(rightString0.get(i), key.get(0));
             rightString1.add(XOR(temp1, temp2));
         }
 
@@ -41,7 +41,7 @@ public class Main {
         for (int i = 0; i < lefString1.size(); i++){
             lefString2.add(rightString1.get(i));
             String temp1 = lefString1.get(i);
-            String temp2 = bitExpansion(rightString1.get(i), key.get(1));
+            String temp2 = functionF(rightString1.get(i), key.get(1));
             rightString2.add(XOR(temp1, temp2));
         }
 
@@ -83,20 +83,20 @@ public class Main {
         List<String> dleftString1 = new ArrayList<String>();
         List<String> drightString1 = new ArrayList<String>();
         for (int i = 0; i < dleftString0.size(); i++){
-            dleftString1.add(drightString0.get(i));
-            String temp1 = dleftString0.get(i);
-            String temp2 = bitExpansion(drightString0.get(i), key.get(1));
-            drightString1.add(XOR(temp1, temp2));
+            drightString1.add(dleftString0.get(i));
+            String temp1 = drightString0.get(i);
+            String temp2 = functionF(dleftString0.get(i), key.get(1));
+            dleftString1.add(XOR(temp1, temp2));
         }
 
         //Round 2 - Decryption
         List<String> dleftString2 = new ArrayList<String>();
         List<String> drightString2 = new ArrayList<String>();
         for (int i = 0; i < dleftString1.size(); i++){
-            dleftString2.add(drightString1.get(i));
-            String temp1 = dleftString1.get(i);
-            String temp2 = bitExpansion(drightString1.get(i), key.get(0));
-            drightString2.add(XOR(temp1, temp2));
+            drightString2.add(dleftString1.get(i));
+            String temp1 = drightString1.get(i);
+            String temp2 = functionF(dleftString1.get(i), key.get(0));
+            dleftString2.add(XOR(temp1, temp2));
         }
 
         //Putting decryption pieces back together
@@ -106,8 +106,8 @@ public class Main {
             plainBitString += drightString2.get(i);
         }
 
-        List<String> plainArrayList = stringToParts(plainBitString, 5);
-        plaintextArray = binaryStringToIntArray(plainArrayList);
+        List<String> decryptArrayList = stringToParts(plainBitString, 5);
+        plaintextArray = binaryStringToIntArray(decryptArrayList);
         plaintext = intArrayToAlphabet(plaintextArray);
 
         System.out.println(String.valueOf(plaintext));
@@ -115,7 +115,7 @@ public class Main {
         // System.out.println(lefString1.get(0));
         // System.out.println(dleftString1.get(0));
 
-        // String test = bitExpansion("10110101", key.get(0));
+        // String test = functionF("10110101", key.get(0));
 
         // System.out.println(test);
     }
@@ -221,7 +221,7 @@ public class Main {
 
     // QUESTION 1.2
     // exapnds 8-bit bit string into 12 bits - working
-    public static String bitExpansion(String string, String key) {
+    public static String functionF(String string, String key) {
         int[][] sBox1 = { { 15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10 },
                 { 3, 13, 4, 7, 15, 2, 8, 14, 12, 0, 1, 10, 6, 9, 11, 5 },
                 { 0, 14, 7, 11, 10, 4, 13, 1, 5, 8, 12, 6, 9, 3, 2, 15 },
@@ -244,7 +244,6 @@ public class Main {
         expandedBitString = XOR(expandedBitString, key);
 
         List<String> list = stringToParts(expandedBitString, 6);
-        //System.out.println(String.valueOf(Integer.parseInt("00" + list.get(0).charAt(0) + list.get(0).charAt(5), 2)));
         sBoxVals[0] = Integer.parseInt("00" + list.get(0).charAt(0) + list.get(0).charAt(5), 2);
         sBoxVals[1] = Integer.parseInt(list.get(0).substring(1, 5), 2);
         sBoxVals[2] = Integer.parseInt("00" + list.get(1).charAt(0) + list.get(1).charAt(5), 2);
@@ -255,10 +254,7 @@ public class Main {
 
         list = intArrayToBinaryString4(array);
 
-        expandedBitString = "";
-        for (int i = 0; i < 2; i++) {
-            expandedBitString += list.get(i);
-        }
+        expandedBitString = stringListToString(list);
 
         return expandedBitString;
     }
@@ -287,11 +283,9 @@ public class Main {
 
     public static String stringListToString(List<String> list){
         String string = "";
-
         for (int i = 0; i < list.size(); i++){
             string += list.get(i);
         }
-        
         return string;
     }
 }
