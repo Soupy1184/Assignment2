@@ -6,29 +6,26 @@ public class Main {
     public static void main(String[] args){
         String K = "101101010010100101101011";
         String plaintext = "how do you like computer science";
+        
 
-        //Question #1.3
-        List<String> key = getParts(K);
+        //Question #1.3 / 1.4 ENCRYPTION
+        List<String> key = stringToParts(K, 12);
+
         int[] plaintextArray = alphabetToIntArray(plaintext);
         List<String> binaryString = intArrayToBinaryString5(plaintextArray);
+        String concatBinString = stringListToString(binaryString);
+        List<String> cipherArray = stringToParts(concatBinString, 16);
         
-        String binaryString2 = "";
-        for (int i = 0; i < binaryString.size(); i++){
-            binaryString2 += binaryString.get(i);
-        }
-        
-        List<String> cipherArray = getBinaryStrings(binaryString2);
+        //Round 0 - Encryption
         List<String> lefString0 = new ArrayList<String>();
         List<String> rightString0 = new ArrayList<String>();
-        //System.out.println(String.valueOf(cipherArray));
-        
         for (int j = 0; j < cipherArray.size(); j++){ //number of strings in the array
-            List<String> string = getParts(cipherArray.get(j));
+            List<String> string = stringToParts(cipherArray.get(j), 8);
             lefString0.add(string.get(0));
             rightString0.add(string.get(1));
         }
 
-        //Round 1
+        //Round 1 - Encryption
         List<String> lefString1 = new ArrayList<String>();
         List<String> rightString1 = new ArrayList<String>();
         for (int i = 0; i < lefString0.size(); i++){
@@ -38,7 +35,7 @@ public class Main {
             rightString1.add(XOR(temp1, temp2));
         }
 
-        //Round 2
+        //Round 2 - Encryption
         List<String> lefString2 = new ArrayList<String>();
         List<String> rightString2 = new ArrayList<String>();
         for (int i = 0; i < lefString1.size(); i++){
@@ -54,11 +51,73 @@ public class Main {
             cipherBitString += rightString2.get(i);
         }
 
-        cipherArray = stringTo5Bits(cipherBitString);
-        int[] ciphertextArray = binaryStringToIntArray(cipherArray);
+        List<String> cipherArrayList = stringToParts(cipherBitString, 5);
+        int[] ciphertextArray = binaryStringToIntArray(cipherArrayList);
         String ciphertext = intArrayToAlphabet(ciphertextArray);
 
         System.out.println(ciphertext);
+
+        //DECRYPTION 
+        // int[] plaintextArray = alphabetToIntArray(plaintext);
+        // List<String> binaryString = intArrayToBinaryString5(plaintextArray);
+        // String concatBinString = stringListToString(binaryString);
+        // List<String> cipherArray = stringToParts(concatBinString, 16);
+
+        ciphertextArray = alphabetToIntArray(ciphertext);
+        cipherArrayList = intArrayToBinaryString5(ciphertextArray);
+        concatBinString = stringListToString(cipherArrayList);
+        List<String> plainArray = stringToParts(concatBinString, 16);
+
+        // System.out.println(String.valueOf(cipherArray));
+        // System.out.println(String.valueOf(plainArray));
+        //Round 0 - Decryption
+        List<String> dleftString0 = new ArrayList<String>();
+        List<String> drightString0 = new ArrayList<String>();
+        for (int j = 0; j < plainArray.size(); j++){ //number of strings in the array
+            List<String> string = stringToParts(plainArray.get(j), 8);
+            dleftString0.add(string.get(0));
+            drightString0.add(string.get(1));
+        }
+
+        //Round 1 - Decryption
+        List<String> dleftString1 = new ArrayList<String>();
+        List<String> drightString1 = new ArrayList<String>();
+        for (int i = 0; i < dleftString0.size(); i++){
+            dleftString1.add(drightString0.get(i));
+            String temp1 = dleftString0.get(i);
+            String temp2 = bitExpansion(drightString0.get(i), key.get(1));
+            drightString1.add(XOR(temp1, temp2));
+        }
+
+        //Round 2 - Decryption
+        List<String> dleftString2 = new ArrayList<String>();
+        List<String> drightString2 = new ArrayList<String>();
+        for (int i = 0; i < dleftString1.size(); i++){
+            dleftString2.add(drightString1.get(i));
+            String temp1 = dleftString1.get(i);
+            String temp2 = bitExpansion(drightString1.get(i), key.get(0));
+            drightString2.add(XOR(temp1, temp2));
+        }
+
+        //Putting decryption pieces back together
+        String plainBitString = "";
+        for (int i = 0; i < dleftString2.size(); i++){
+            plainBitString += dleftString2.get(i);
+            plainBitString += drightString2.get(i);
+        }
+
+        List<String> plainArrayList = stringToParts(plainBitString, 5);
+        plaintextArray = binaryStringToIntArray(plainArrayList);
+        plaintext = intArrayToAlphabet(plaintextArray);
+
+        System.out.println(String.valueOf(plaintext));
+
+        // System.out.println(lefString1.get(0));
+        // System.out.println(dleftString1.get(0));
+
+        // String test = bitExpansion("10110101", key.get(0));
+
+        // System.out.println(test);
     }
 
     // QUESTION #1.1
@@ -184,10 +243,11 @@ public class Main {
 
         expandedBitString = XOR(expandedBitString, key);
 
-        List<String> list = getParts(expandedBitString);
+        List<String> list = stringToParts(expandedBitString, 6);
+        //System.out.println(String.valueOf(Integer.parseInt("00" + list.get(0).charAt(0) + list.get(0).charAt(5), 2)));
         sBoxVals[0] = Integer.parseInt("00" + list.get(0).charAt(0) + list.get(0).charAt(5), 2);
         sBoxVals[1] = Integer.parseInt(list.get(0).substring(1, 5), 2);
-        sBoxVals[2] = Integer.parseInt("00" + list.get(1).charAt(0) + list.get(0).charAt(5), 2);
+        sBoxVals[2] = Integer.parseInt("00" + list.get(1).charAt(0) + list.get(1).charAt(5), 2);
         sBoxVals[3] = Integer.parseInt(list.get(1).substring(1, 5), 2);
 
         array[0] = sBox1[sBoxVals[0]][sBoxVals[1]];
@@ -216,32 +276,22 @@ public class Main {
         return product;
     }
 
-    private static List<String> getParts(String string) {
-        List<String> parts = new ArrayList<String>();
-
-        parts.add(string.substring(0, string.length() / 2));
-        parts.add(string.substring(string.length() / 2, string.length()));
-
-        return parts;
-    }
-
-    private static List<String> stringTo5Bits(String string){
+    private static List<String> stringToParts(String string, int n){
         List<String> parts = new ArrayList<String>();
         int len = string.length();
-        for (int i=0; i<len; i+=5){
-            parts.add(string.substring(i, Math.min(len, i + 5)));
+        for (int i=0; i<len; i+=n){
+            parts.add(string.substring(i, Math.min(len, i + n)));
         }
         return parts;
     }
 
-    // This method grabbed from this source:
-    // https://stackoverflow.com/questions/2297347/splitting-a-string-at-every-n-th-character
-    private static List<String> getBinaryStrings(String string) {
-        List<String> parts = new ArrayList<String>();
-        int len = string.length();
-        for (int i=0; i<len; i+=16){
-            parts.add(string.substring(i, Math.min(len, i + 16)));
+    public static String stringListToString(List<String> list){
+        String string = "";
+
+        for (int i = 0; i < list.size(); i++){
+            string += list.get(i);
         }
-        return parts;
+        
+        return string;
     }
 }
