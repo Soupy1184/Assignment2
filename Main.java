@@ -6,123 +6,32 @@ public class Main {
     public static void main(String[] args){
         String K = "101101010010100101101011";
         String plaintext = "how do you like computer science";
+        String plaintextCBC = "cryptography is an important tool for network security." +
+        " but there are other issues for network security.";
+      
+        //QUESTION 1 - ENCRYPTION 
+        String encryptString = encryptDES(plaintext, K);
+        //OUTPUT CIPHERTEXT - plaintext to ciphertext
+        System.out.println(encryptString);
+
+        //QUESTION 2 - DECRYPTION
+        String decryptString = decryptDES(encryptString, K);
+        //OUTPUT PLAINTEXT - ciphertext decrypted back to plaintext
+        System.out.println(decryptString);
+
+        //QUESTION 3 - ENCRYPTION CBC MODE
+        String cbcModeEncryptString = encryptDESmodeCBC(plaintextCBC, K);
+        //OUTPUT CIPHERTEXT - plaintextCBC encryprted to ciphertext
+        System.out.println(cbcModeEncryptString);
+
+        //QUESTION 4 - MILLER-RABIN
         
 
-        //Question #1.3 / 1.4 ENCRYPTION
-        List<String> key = stringToParts(K, 12);
-
-        int[] plaintextArray = alphabetToIntArray(plaintext);
-        List<String> plainArrayList = intArrayToBinaryString5(plaintextArray);
-        String concatBinString = stringListToString(plainArrayList);
-        List<String> cipherArray = stringToParts(concatBinString, 16);
-        
-        //Round 0 - Encryption
-        List<String> lefString0 = new ArrayList<String>();
-        List<String> rightString0 = new ArrayList<String>();
-        for (int j = 0; j < cipherArray.size(); j++){ //number of strings in the array
-            List<String> string = stringToParts(cipherArray.get(j), 8);
-            lefString0.add(string.get(0));
-            rightString0.add(string.get(1));
-        }
-
-        //Round 1 - Encryption
-        List<String> lefString1 = new ArrayList<String>();
-        List<String> rightString1 = new ArrayList<String>();
-        for (int i = 0; i < lefString0.size(); i++){
-            lefString1.add(rightString0.get(i));
-            String temp1 = lefString0.get(i);
-            String temp2 = functionF(rightString0.get(i), key.get(0));
-            rightString1.add(XOR(temp1, temp2));
-        }
-
-        //Round 2 - Encryption
-        List<String> lefString2 = new ArrayList<String>();
-        List<String> rightString2 = new ArrayList<String>();
-        for (int i = 0; i < lefString1.size(); i++){
-            lefString2.add(rightString1.get(i));
-            String temp1 = lefString1.get(i);
-            String temp2 = functionF(rightString1.get(i), key.get(1));
-            rightString2.add(XOR(temp1, temp2));
-        }
-
-        String cipherBitString = "";
-        for (int i = 0; i < lefString2.size(); i++){
-            cipherBitString += lefString2.get(i);
-            cipherBitString += rightString2.get(i);
-        }
-
-        List<String> cipherArrayList = stringToParts(cipherBitString, 5);
-        int[] ciphertextArray = binaryStringToIntArray(cipherArrayList);
-        String ciphertext = intArrayToAlphabet(ciphertextArray);
-
-        System.out.println(ciphertext);
-
-        //DECRYPTION 
-        // int[] plaintextArray = alphabetToIntArray(plaintext);
-        // List<String> binaryString = intArrayToBinaryString5(plaintextArray);
-        // String concatBinString = stringListToString(binaryString);
-        // List<String> cipherArray = stringToParts(concatBinString, 16);
-
-        ciphertextArray = alphabetToIntArray(ciphertext);
-        cipherArrayList = intArrayToBinaryString5(ciphertextArray);
-        concatBinString = stringListToString(cipherArrayList);
-        List<String> plainArray = stringToParts(concatBinString, 16);
-
-        // System.out.println(String.valueOf(cipherArray));
-        // System.out.println(String.valueOf(plainArray));
-        //Round 0 - Decryption
-        List<String> dleftString0 = new ArrayList<String>();
-        List<String> drightString0 = new ArrayList<String>();
-        for (int j = 0; j < plainArray.size(); j++){ //number of strings in the array
-            List<String> string = stringToParts(plainArray.get(j), 8);
-            dleftString0.add(string.get(0));
-            drightString0.add(string.get(1));
-        }
-
-        //Round 1 - Decryption
-        List<String> dleftString1 = new ArrayList<String>();
-        List<String> drightString1 = new ArrayList<String>();
-        for (int i = 0; i < dleftString0.size(); i++){
-            drightString1.add(dleftString0.get(i));
-            String temp1 = drightString0.get(i);
-            String temp2 = functionF(dleftString0.get(i), key.get(1));
-            dleftString1.add(XOR(temp1, temp2));
-        }
-
-        //Round 2 - Decryption
-        List<String> dleftString2 = new ArrayList<String>();
-        List<String> drightString2 = new ArrayList<String>();
-        for (int i = 0; i < dleftString1.size(); i++){
-            drightString2.add(dleftString1.get(i));
-            String temp1 = drightString1.get(i);
-            String temp2 = functionF(dleftString1.get(i), key.get(0));
-            dleftString2.add(XOR(temp1, temp2));
-        }
-
-        //Putting decryption pieces back together
-        String plainBitString = "";
-        for (int i = 0; i < dleftString2.size(); i++){
-            plainBitString += dleftString2.get(i);
-            plainBitString += drightString2.get(i);
-        }
-
-        List<String> decryptArrayList = stringToParts(plainBitString, 5);
-        plaintextArray = binaryStringToIntArray(decryptArrayList);
-        plaintext = intArrayToAlphabet(plaintextArray);
-
-        System.out.println(String.valueOf(plaintext));
-
-        // System.out.println(lefString1.get(0));
-        // System.out.println(dleftString1.get(0));
-
-        // String test = functionF("10110101", key.get(0));
-
-        // System.out.println(test);
     }
 
     // QUESTION #1.1
     // changes a phrase into an array of integers - working
-    public static int[] alphabetToIntArray(String string) {
+    private static int[] alphabetToIntArray(String string) {
         string = string.toLowerCase();
         char[] stringArray = string.toCharArray();
         String alphabet = "abcdefghijklmnopqrstuvwxyz .,?()";
@@ -140,7 +49,8 @@ public class Main {
         return zSpace;
     }
 
-    public static List<String> intArrayToBinaryString5(int[] array) {
+    //takes and int array and transforms to binary string, each int is 5-bit string
+    private static List<String> intArrayToBinaryString5(int[] array) {
         List<String> string = new ArrayList<String>();
         int count;
 
@@ -170,10 +80,10 @@ public class Main {
         return string;
     }
 
-    public static List<String> intArrayToBinaryString4(int[] array) {
+    //USED FOR INTEGER PARSING
+    private static List<String> intArrayToBinaryString4(int[] array) {
         List<String> string = new ArrayList<String>();
         int count;
-
         for (int i = 0; i < array.length; i++) {
             count = Integer.toBinaryString(array[i]).length();
             switch (count) {
@@ -193,11 +103,11 @@ public class Main {
                     System.out.println("Error in element " + array[i]);
             }
         }
-
         return string;
     }
 
-    public static String intArrayToAlphabet(int[] array){
+    //Question 1.1 - Inverse int array to alphabet
+    private static String intArrayToAlphabet(int[] array){
         String string = "";
         String alphabet = "abcdefghijklmnopqrstuvwxyz .,?()";
 
@@ -209,7 +119,7 @@ public class Main {
     }
 
     // changes a binary string to integer array
-    public static int[] binaryStringToIntArray(List<String> string) {
+    private static int[] binaryStringToIntArray(List<String> string) {
         int[] array = new int[string.size()];
 
         for (int i = 0; i < array.length; i++) {
@@ -220,8 +130,8 @@ public class Main {
     }
 
     // QUESTION 1.2
-    // exapnds 8-bit bit string into 12 bits - working
-    public static String functionF(String string, String key) {
+    // encryption function
+    private static String functionF(String string, String key) {
         int[][] sBox1 = { { 15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10 },
                 { 3, 13, 4, 7, 15, 2, 8, 14, 12, 0, 1, 10, 6, 9, 11, 5 },
                 { 0, 14, 7, 11, 10, 4, 13, 1, 5, 8, 12, 6, 9, 3, 2, 15 },
@@ -259,8 +169,8 @@ public class Main {
         return expandedBitString;
     }
 
-    // working
-    public static String XOR(String B, String K) {
+    // xor two strings
+    private static String XOR(String B, String K) {
         String product = "";
         for (int i = 0; i < B.length(); i++) {
             if (B.charAt(i) == K.charAt(i)) {
@@ -281,11 +191,177 @@ public class Main {
         return parts;
     }
 
-    public static String stringListToString(List<String> list){
+    private static String stringListToString(List<String> list){
         String string = "";
         for (int i = 0; i < list.size(); i++){
             string += list.get(i);
         }
         return string;
+    }
+
+    private static String encryptDES(String plaintext, String K){
+        //Question #1.3 / 1.4 ENCRYPTION
+        //Initial Setup
+        List<String> key = stringToParts(K, 12);
+
+        int[] plaintextArray = alphabetToIntArray(plaintext);
+        List<String> plainArrayList = intArrayToBinaryString5(plaintextArray);
+        String concatBinString = stringListToString(plainArrayList);
+        List<String> cipherArray = stringToParts(concatBinString, 16);
+        
+        //Round 0 - Encryption
+        List<String> lefString0 = new ArrayList<String>();
+        List<String> rightString0 = new ArrayList<String>();
+        for (int j = 0; j < cipherArray.size(); j++){ //number of strings in the array
+            List<String> string = stringToParts(cipherArray.get(j), 8);
+            lefString0.add(string.get(0));
+            rightString0.add(string.get(1));
+        }
+
+        //Round 1 - Encryption
+        List<String> lefString1 = new ArrayList<String>();
+        List<String> rightString1 = new ArrayList<String>();
+        for (int i = 0; i < lefString0.size(); i++){
+            lefString1.add(rightString0.get(i));
+            String temp1 = lefString0.get(i);
+            String temp2 = functionF(rightString0.get(i), key.get(0));
+            rightString1.add(XOR(temp1, temp2));
+        }
+
+        //Round 2 - Encryption
+        List<String> lefString2 = new ArrayList<String>();
+        List<String> rightString2 = new ArrayList<String>();
+        for (int i = 0; i < lefString1.size(); i++){
+            lefString2.add(rightString1.get(i));
+            String temp1 = lefString1.get(i);
+            String temp2 = functionF(rightString1.get(i), key.get(1));
+            rightString2.add(XOR(temp1, temp2));
+        }
+
+        //Putting the pieces back together
+        String cipherBitString = "";
+        for (int i = 0; i < lefString2.size(); i++){
+            cipherBitString += lefString2.get(i);
+            cipherBitString += rightString2.get(i);
+        }
+        List<String> cipherArrayList = stringToParts(cipherBitString, 5);
+        int[] ciphertextArray = binaryStringToIntArray(cipherArrayList);
+        String ciphertext = intArrayToAlphabet(ciphertextArray);
+
+        return ciphertext;
+    }
+
+    private static String decryptDES(String ciphertext, String K){
+        //DECRYPTION - QUESTION 2
+        List<String> key = stringToParts(K, 12);
+        //Initial setup
+        int[] ciphertextArray = alphabetToIntArray(ciphertext);
+        List<String> cipherArrayList = intArrayToBinaryString5(ciphertextArray);
+        String concatBinString = stringListToString(cipherArrayList);
+        List<String> plainArray = stringToParts(concatBinString, 16);
+
+        //Round 0 - Decryption
+        List<String> dleftString0 = new ArrayList<String>();
+        List<String> drightString0 = new ArrayList<String>();
+        for (int j = 0; j < plainArray.size(); j++){ //number of strings in the array
+            List<String> string = stringToParts(plainArray.get(j), 8);
+            dleftString0.add(string.get(0));
+            drightString0.add(string.get(1));
+        }
+
+        //Round 1 - Decryption
+        List<String> dleftString1 = new ArrayList<String>();
+        List<String> drightString1 = new ArrayList<String>();
+        for (int i = 0; i < dleftString0.size(); i++){
+            drightString1.add(dleftString0.get(i));
+            String temp1 = drightString0.get(i);
+            String temp2 = functionF(dleftString0.get(i), key.get(1));
+            dleftString1.add(XOR(temp1, temp2));
+        }
+
+        //Round 2 - Decryption
+        List<String> dleftString2 = new ArrayList<String>();
+        List<String> drightString2 = new ArrayList<String>();
+        for (int i = 0; i < dleftString1.size(); i++){
+            drightString2.add(dleftString1.get(i));
+            String temp1 = drightString1.get(i);
+            String temp2 = functionF(dleftString1.get(i), key.get(0));
+            dleftString2.add(XOR(temp1, temp2));
+        }
+
+        //Putting decryption pieces back together
+        String plainBitString = "";
+        for (int i = 0; i < dleftString2.size(); i++){
+            plainBitString += dleftString2.get(i);
+            plainBitString += drightString2.get(i);
+        }
+        List<String> decryptArrayList = stringToParts(plainBitString, 5);
+        int[] plaintextArray = binaryStringToIntArray(decryptArrayList);
+        String plaintext = intArrayToAlphabet(plaintextArray);
+
+        return plaintext;
+    }
+
+    private static String encryptDESmodeCBC(String plaintext, String K){
+        //Question #1.3 / 1.4 ENCRYPTION
+        //Initial Setup
+        if (plaintext.length() % 16 != 0){
+            int add = 16 - (plaintext.length() % 16);
+            for (int i = 0; i < add; i++){
+                plaintext += 'x';
+            }
+        }
+
+        String initialVector = "1010010110100101";
+        List<String> key = stringToParts(K, 12);
+
+        int[] plaintextArray = alphabetToIntArray(plaintext);
+        List<String> plainArrayList = intArrayToBinaryString5(plaintextArray);
+        String concatBinString = stringListToString(plainArrayList);
+        List<String> cipherArray = stringToParts(concatBinString, 16);
+
+
+        List<String> lefString0 = new ArrayList<String>();
+        List<String> rightString0 = new ArrayList<String>();
+        List<String> lefString1 = new ArrayList<String>();
+        List<String> rightString1 = new ArrayList<String>();
+        List<String> lefString2 = new ArrayList<String>();
+        List<String> rightString2 = new ArrayList<String>();
+
+        for (int a = 0; a < cipherArray.size(); a++){
+            String xorInitVec = XOR(cipherArray.get(a), initialVector);
+
+            //Round 0 - Encryption
+            List<String> string = stringToParts(xorInitVec, 8);
+            lefString0.add(string.get(0));
+            rightString0.add(string.get(1));
+            
+            //Round 1 - Encryption
+            lefString1.add(rightString0.get(a));
+            String temp1 = lefString0.get(a);
+            String temp2 = functionF(rightString0.get(a), key.get(0));
+            rightString1.add(XOR(temp1, temp2));
+            
+            //Round 2 - Encryption
+            lefString2.add(rightString1.get(a));  
+            String temp3 = lefString1.get(a);
+            String temp4 = functionF(rightString1.get(a), key.get(1));
+            rightString2.add(XOR(temp3, temp4));
+
+            //initital vector = ciphertext for block 1
+            initialVector = lefString2.get(a) + rightString2.get(a);
+        }
+
+        //Putting the pieces back together
+        String cipherBitString = "";
+        for (int i = 0; i < lefString2.size(); i++){
+            cipherBitString += lefString2.get(i);
+            cipherBitString += rightString2.get(i);
+        }
+        List<String> cipherArrayList = stringToParts(cipherBitString, 5);
+        int[] ciphertextArray = binaryStringToIntArray(cipherArrayList);
+        String ciphertext = intArrayToAlphabet(ciphertextArray);
+
+        return ciphertext;
     }
 }
