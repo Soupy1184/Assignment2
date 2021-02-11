@@ -2,7 +2,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-    
     public static void main(String[] args){
         String K = "101101010010100101101011";
         String plaintext = "how do you like computer science";
@@ -12,22 +11,25 @@ public class Main {
         //QUESTION 1 - ENCRYPTION 
         String encryptString = encryptDES(plaintext, K);
         //OUTPUT CIPHERTEXT - plaintext to ciphertext
-        System.out.println(encryptString);
+        System.out.println("Output for question 1: " + encryptString);
 
         //QUESTION 2 - DECRYPTION
         String decryptString = decryptDES(encryptString, K);
         //OUTPUT PLAINTEXT - ciphertext decrypted back to plaintext
-        System.out.println(decryptString);
+        System.out.println("Output for question 2: " + decryptString);
 
         //QUESTION 3 - ENCRYPTION CBC MODE
         String cbcModeEncryptString = encryptDESmodeCBC(plaintextCBC, K);
         //OUTPUT CIPHERTEXT - plaintextCBC encryprted to ciphertext
-        System.out.println(cbcModeEncryptString);
+        System.out.println("Output for question 3: " + cbcModeEncryptString);
 
         //QUESTION 4 - MILLER-RABIN
-        
-
+        MillerRabin test = new MillerRabin(942979);
+        MillerRabin test2 = new MillerRabin(33773);
+        // System.out.println("k: " + test.getK() + ", a: " + test.getA() + ", m: " + test.getM());
+        // System.out.println("k: " + test2.getK() + ", a: " + test2.getA() + ", m: " + test.getM());
     }
+
 
     // QUESTION #1.1
     // changes a phrase into an array of integers - working
@@ -312,14 +314,19 @@ public class Main {
             }
         }
 
-        String initialVector = "1010010110100101";
+        String initialVector = "";
+        for (int i = 0; i < 16; i++){
+            initialVector += (int) ((Math.random() * ((1 - 0) + 1)) + 0);
+        }
+        //prints initial vector so you know it is random
+        System.out.println("Initial vector: " + initialVector);
+        
         List<String> key = stringToParts(K, 12);
 
         int[] plaintextArray = alphabetToIntArray(plaintext);
         List<String> plainArrayList = intArrayToBinaryString5(plaintextArray);
         String concatBinString = stringListToString(plainArrayList);
         List<String> cipherArray = stringToParts(concatBinString, 16);
-
 
         List<String> lefString0 = new ArrayList<String>();
         List<String> rightString0 = new ArrayList<String>();
@@ -329,7 +336,9 @@ public class Main {
         List<String> rightString2 = new ArrayList<String>();
 
         for (int a = 0; a < cipherArray.size(); a++){
+            // System.out.println("Initial Vector " + initialVector + ", Current Block: " + cipherArray.get(a));
             String xorInitVec = XOR(cipherArray.get(a), initialVector);
+            // System.out.println("Initial Vector After XOR: " + xorInitVec);
 
             //Round 0 - Encryption
             List<String> string = stringToParts(xorInitVec, 8);
@@ -364,4 +373,5 @@ public class Main {
 
         return ciphertext;
     }
+
 }
