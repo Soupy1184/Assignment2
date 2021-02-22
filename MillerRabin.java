@@ -29,15 +29,15 @@ public class MillerRabin {
     private void findKM(long n){
         for (int i = 1; i < 20; i = i + 2){
             if (((n-1) / Math.pow(2, i)) % 1 == 0){
-                this.k = i;
-                this.m = (int) ((n - 1) / Math.pow(2, i));
+                k = i;
+                m = (int) ((n - 1) / Math.pow(2, i));
             }
             // System.out.println(((n-1) / Math.pow(2, i)));
         }
     }
 
     private void chooseA(long n){
-        this.a = (long) ((Math.random() * (((n-1) - 1) + 1)) + 1);
+        a = (long) ((Math.random() * (((n-1) - 1) + 1)) + 1);
     }
 
     public void isPrime() {
